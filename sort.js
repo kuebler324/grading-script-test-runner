@@ -8,7 +8,6 @@ function selectionSort(arr) {
         minIndex = j;
       }
     }
-    // swap
     arr[minIndex] = arr[i];
     arr[i] = min;
   }
@@ -63,7 +62,6 @@ function heapSort(arr) {
   // not implementing a heap for this
 }
 function mergeSortHelper(l1, l2) {
-  console.log(l1, l2);
   const arrOut = [];
   let p1 = 0;
   let p2 = 0;
