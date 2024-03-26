@@ -5,6 +5,8 @@
       will run all tests despite failures
     -v
       will only run valgrind
+    -test=?
+      will run the specified test number ? (if found)
 
   linux dependencies:
     node
@@ -60,6 +62,8 @@ const main = async () => {
   // detect command flags
   const allFlag = process.argv.indexOf('-all') !== -1;
   const vFlag = process.argv.indexOf('-v') !== -1;
+  const testFlagString = process.argv.find(value => value.indexOf('-test') === 0);
+  const testFlag = testFlagString === undefined ? false : testFlagString.split('=')[1];
 
   // obtain the argument for the test cpp file
   const testPath = 'MainTest.cpp';
@@ -97,10 +101,13 @@ const main = async () => {
     // loop through all input files
     if (!vFlag) {
       let result = boldText('\nTest Results:\n\nInput File\tOutput\tTime\tSpace\n');
-      const accept = 'YES';
+      const accept = 'yes';
       for (let i = 0; i < files.length && (!problem || allFlag); ++i) {
         const filename = files[i];
         if (filename.indexOf('.txt') === filename.length - 4) {
+          if (testFlag && filename !== `input_${testFlag}.txt`) {
+            continue; // skip tests if test flag is used, ie, node test -test=10
+          }
           // execute compiled test file with input
           await execute(`/usr/bin/time -v -o log.txt ./compiled Inputs/${filename} >result.txt`);
 
@@ -113,7 +120,7 @@ const main = async () => {
                 if (outcome === '') {
                   return '';
                 }
-                const acceptable = outcome === accept;
+                const acceptable = outcome.toLowerCase() === accept;
                 if (!acceptable) {
                   problem = true;
                 }
